@@ -1,0 +1,10 @@
+# Local / CI artifacts
+whitehax_results.sarif
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.DS_Store
+.idea/
+.vscode/
