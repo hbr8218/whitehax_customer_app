@@ -54,4 +54,4 @@ sarif = {
 with open("output.sarif", "w") as f:
     json.dump(sarif, f, indent=2)
 
-print("SARIF generated.")
+print("SARIF generated...")
