@@ -1,0 +1,9 @@
+200 — { id, endpoint_name, endpoint_desc, endpoint_type, endpoint_params, created_at, updated_at (ISO), file_names: [str, ...] } — Invoked when the endpoint id exists, belongs to the caller, and the record (plus optional directory file list) is returned.
+
+404 — { "detail": "Endpoint config not found" } — Invoked when the id is unknown or the endpoint is owned by another user.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+500 — { "detail": "An error occurred: <message>" } — Invoked when an unexpected exception is raised while loading the endpoint.

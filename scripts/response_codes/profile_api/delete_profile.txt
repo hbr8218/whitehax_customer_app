@@ -1,0 +1,9 @@
+200 — { "detail": "Profile deleted" } — Invoked when the profile exists, belongs to the caller, and is deleted (including its media directory if present).
+
+404 — { "detail": "Profile not found" } — Invoked when the id does not exist or the profile belongs to another user.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+400 — { "success": false, "detail": str(e) } — Invoked when an uncaught exception occurs during delete.

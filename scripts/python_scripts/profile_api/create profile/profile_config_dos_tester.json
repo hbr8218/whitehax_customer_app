@@ -1,0 +1,160 @@
+{
+    "profile_type": "dos_tester",
+    "test_file_paths": {
+        "dos": [],
+        "llm": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "mcp": [],
+        "rto": [],
+        "docs": [],
+        "frame": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "prompts": [],
+        "custom_decision_tree": [],
+        "rc_prompts": []
+    },
+    "llm_dos": {
+        "sub": {
+            "token_overflow": {
+                "params": {
+                    "max_context_length": null
+                },
+                "enabled": false
+            },
+            "memory_exhaustion": {
+                "params": {
+                    "payload_size": null,
+                    "number_of_memory_requests": null
+                },
+                "enabled": false
+            },
+            "rate_limit_bypass": {
+                "params": {
+                    "test_strategy": null
+                },
+                "enabled": false
+            },
+            "test_slowloris_ai": {
+                "params": {
+                    "delay": null,
+                    "chunks": null
+                },
+                "enabled": false
+            },
+            "cost_amplification": {
+                "params": {
+                    "number_of_cost_requests": null
+                },
+                "enabled": false
+            },
+            "service_disruption": {
+                "params": {
+                    "sustained_rps": null,
+                    "sustained_duration": null
+                },
+                "enabled": false
+            },
+            "test_burst_attacks": {
+                "params": {
+                    "interval": null,
+                    "burst_size": null
+                },
+                "enabled": false
+            },
+            "test_context_overflow": {
+                "params": {
+                    "phases": null
+                },
+                "enabled": false
+            },
+            "resource_exhaustion_dos": {
+                "params": {
+                    "test_intensity": null,
+                    "concurrent_requests": null
+                },
+                "enabled": false
+            },
+            "test_model_poisoning_dos": {
+                "params": {
+                    "poisoning_attempts": null
+                },
+                "enabled": false
+            },
+            "test_repetitive_requests": {
+                "params": {
+                    "pattern_type": null
+                },
+                "enabled": false
+            },
+            "test_prompt_injection_dos": {
+                "params": {
+                    "injection_type": null
+                },
+                "enabled": false
+            },
+            "test_tool_execution_abuse": {
+                "params": {
+                    "tool_calls": null
+                },
+                "enabled": false
+            },
+            "test_session_hijacking_dos": {
+                "params": {
+                    "sessions_per_ip": null
+                },
+                "enabled": false
+            }
+        },
+        "enabled": false
+    },
+    "adv_agentic_ai_attacks": {
+        "sub": {
+            "adv_frame": {
+                "enabled": false
+            },
+            "adv_trolley": {
+                "params": {
+                    "num_dilemmas": null,
+                    "trolley_prompt": null,
+                    "recursion_depth": null,
+                    "complexity_level": null
+                },
+                "enabled": false
+            },
+            "adv_converter": {
+                "params": {
+                    "leet_conv": false,
+                    "base64_conv": false,
+                    "caesar_conv": false,
+                    "repeat_conv": false,
+                    "unicode_conv": false,
+                    "single_char_conv": false
+                },
+                "enabled": false
+            },
+            "adv_crescendo": {
+                "params": {
+                    "stages": null,
+                    "crescendo_prompt": null,
+                    "requests_per_stage": null,
+                    "intensity_multiplier": null
+                },
+                "enabled": false
+            },
+            "adv_rec_pattern": {
+                "enabled": false
+            }
+        },
+        "enabled": false
+    }
+}

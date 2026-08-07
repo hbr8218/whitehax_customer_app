@@ -1,0 +1,19 @@
+201 — { "success": true, "id", "profile_name", "message": "profile created successfully" } — Invoked when all validations pass and ProfileConfg is created.
+
+400 — { "success": false, "detail": "<message>" } — Invoked when config JSON is invalid; endpoint_config_id is missing, not an integer, or no matching EndpointConfig; profile_type/profile_name invalid or missing; or other input validation fails (includes literal detail "Invalid or unknown endpoint_config_id" for bad/missing ids).
+
+403 — { "success": false, "detail": "Invalid or unknown endpoint_config_id" } — Invoked when the endpoint exists but belongs to another user.
+
+403 — { "success": false, "detail": "Profile type '<display>' is not allowed for this license" } — Invoked for license-gated profile types when the license feature flag disallows that type.
+
+403 — { "success": false, "detail": "Employee user has no associated admin" } — Invoked for employees with no added_by when a license check is required for certain profile types.
+
+404 — { "success": false, "detail": "No license found for this user" } (or similar from get_user_license) — Invoked when license lookup fails for admin/employee during license-gated profile creation.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session key validation fails.
+
+404 — { "error": true, "message": "User not found" } — Invoked when the authenticated user id has no User row.
+
+400 — { "success": false, "detail": str(e) } — Invoked on uncaught exception in the handler.

@@ -1,0 +1,38 @@
+{
+    "profile_type": "rto",
+    "test_file_paths": {
+        "dos": [],
+        "llm": [],
+        "mcp": [],
+        "rto": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "docs": [],
+        "frame": [],
+        "prompts": [],
+        "custom_decision_tree": [],
+        "rc_prompts": []
+    },
+    "rto_tests": {
+        "sub": {
+            "doc_upload_tests": {
+                "enabled": false
+            },
+            "mid_size_prompts": {
+                "enabled": false
+            },
+            "reg_size_prompts": {
+                "enabled": false
+            },
+            "large_size_prompts": {
+                "enabled": false
+            }
+        },
+        "enabled": false,
+        "average_response_time": ""
+    }
+}

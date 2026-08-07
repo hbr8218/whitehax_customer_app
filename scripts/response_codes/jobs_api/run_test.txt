@@ -1,0 +1,11 @@
+201 — { "error": false, "job_id": "<string>", "status": "<job status constant>" } — Invoked when the job row is created, WHFTCLI subprocess starts, and initial state is persisted (job_id is stringified pk).
+
+400 — { "error": true, "message": "profile_id is required" } — Invoked when POST omits profile_id.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session key validation fails.
+
+404 — { "error": true, "message": "User not found" } — Invoked when the resolved user id has no User row.
+
+500 — { "error": true, "message": "Failed to start job" } — Invoked when subprocess spawn or related setup throws (job marked failed in DB).

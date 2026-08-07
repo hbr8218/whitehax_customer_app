@@ -1,5 +1,6 @@
 # Local / CI artifacts
 whitehax_results.sarif
+whitehax_scans/_local_validate.py
 __pycache__/
 *.py[cod]
 .venv/
@@ -8,3 +9,6 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+**/*.zip
+__MACOSX/
+.tools/

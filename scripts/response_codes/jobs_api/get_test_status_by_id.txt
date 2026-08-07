@@ -1,0 +1,11 @@
+200 — { "error": false, "data": <status.json payload plus report_id; overall may include profile_id, profile_name, profile_type> } — Invoked when the job exists, is owned by the caller, status file is readable JSON, and payload is returned (may reflect canceled job rewrite).
+
+200 — { "error": true, "message": "status.json not found" } — Invoked when the job is valid but status_file is missing or path does not exist on disk (HTTP still 200).
+
+200 — { "error": true, "message": "status.json is corrupted" } — Invoked when the status file exists but is not valid JSON (HTTP still 200).
+
+404 — { "error": true, "message": "Job not found" } — Invoked when job id does not exist or the job belongs to another user.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.

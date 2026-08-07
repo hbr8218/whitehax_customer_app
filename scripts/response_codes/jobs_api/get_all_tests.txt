@@ -1,0 +1,7 @@
+200 — { "error": false, "jobs": [ { job_id, report_id, profile_id, profile_name, profile_type, status, created_at, started_at, finished_at, user_id, user_name, error_message }, ... ] } — Invoked when authentication succeeds; jobs array may be empty.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+404 — { "error": true, "message": "User not found" } — Invoked when the resolved user id has no User row.

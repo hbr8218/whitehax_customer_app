@@ -1,0 +1,7 @@
+200 — JSON report object: id, profile_id, score_json, created_at, overall_readiness, user_id, report_name, endpoint_details_summary, profile_details_summary, user_details_summary (fname, lname, email, company_name) — Invoked when ScanResult id exists and report.user_id matches the authenticated user.
+
+404 — { "error": true, "message": "Report not found" } — Invoked when no ScanResult for id, or the report belongs to another user.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.

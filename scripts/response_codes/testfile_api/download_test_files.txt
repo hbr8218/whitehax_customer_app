@@ -1,0 +1,9 @@
+200 — Binary ZIP (Content-Type application/zip; Content-Disposition attachment filename profile_<profile_id>_test_files.zip). Built from profile.config.test_file_paths: one top-level folder per key, files inside each folder; missing paths skipped; empty keys yield empty folders — Invoked when the profile exists, belongs to the authenticated user, config is a dict, and test_file_paths is a dict (ZIP may be nearly empty if all paths are missing).
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+404 — { "error": true, "message": "User not found" } — Invoked when the resolved user id has no User row.
+
+404 — { "error": true, "message": "Invalid profile" } — Invoked when the profile id is missing, owned by another user, config is not a dict, or test_file_paths is not a dict.

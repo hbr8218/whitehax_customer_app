@@ -1,0 +1,7 @@
+200 — JSON array (not wrapped): [ { id, name, endpoint_type, last_modified (ISO), endpoint_params }, ... ] — Invoked when authentication succeeds; list may be empty.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+400 — { "success": false, "detail": str(e) } — Invoked when an exception occurs while querying endpoint configs for the user.

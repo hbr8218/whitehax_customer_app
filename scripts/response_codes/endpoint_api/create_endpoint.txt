@@ -1,0 +1,11 @@
+201 — { "success": true, "detail": "...", "data": { id, endpoint_name, endpoint_desc, endpoint_type, endpoint_params, created_at, updated_at (ISO) } } — Invoked when multipart/form POST passes validation and EndpointConfig (and optional script/json files) is created successfully.
+
+400 — { "success": false, "detail": "<validation message>" } — Invoked when required fields are missing, endpoint_params is invalid JSON, endpoint_type/selection/url/model_details/json_parameters/scripts rules fail, scripts are not .py, etc.
+
+400 — { "success": false, "detail": str(e) } — Invoked when an uncaught exception occurs in the handler (wrapped as 400).
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key header is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when headers are present but the API key/session pair is invalid, inactive, or mismatched.
+
+404 — { "error": true, "message": "User not found" } — Invoked when the resolved user id has no matching User row.

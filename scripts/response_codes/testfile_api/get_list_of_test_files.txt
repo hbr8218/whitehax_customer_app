@@ -1,0 +1,7 @@
+200 — { "success": true, "files": [ { "file_category", "file_name", "file_creation_method", "file_path" }, ... ] } — Invoked when authentication succeeds; aggregates internal test files, user-generated, uploads, and frame files (list may be empty).
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+404 — { "error": true, "message": "User not found" } — Invoked when the resolved user id has no user row.

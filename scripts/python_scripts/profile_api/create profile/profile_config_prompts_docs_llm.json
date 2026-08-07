@@ -1,0 +1,82 @@
+{
+    "profile_type": "prompts_docs_llm",
+    "test_file_paths": {
+        "dos": [],
+        "llm": [],
+        "mcp": [],
+        "rto": [],
+        "docs": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "frame": [],
+        "prompts": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "custom_decision_tree": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "rc_prompts": []
+    },
+    "prompts_testing": {
+        "enabled": false
+    },
+    "malicious_doc_uploads": {
+        "enabled": false
+    },
+    "adv_multi_attacks": {
+        "sub": {
+            "ama_backdoor": {
+                "enabled": false
+            },
+            "ama_collusion": {
+                "enabled": false
+            },
+            "ama_jb_classic": {
+                "enabled": false
+            },
+            "ama_jb_reverse": {
+                "enabled": false
+            },
+            "ama_crisis_manip": {
+                "enabled": false
+            },
+            "ama_tool_exploit": {
+                "enabled": false
+            },
+            "ama_jb_contextual": {
+                "enabled": false
+            },
+            "ama_safe_boundary": {
+                "enabled": false
+            },
+            "ama_jb_token_manip": {
+                "enabled": false
+            },
+            "ama_info_extraction": {
+                "enabled": false
+            },
+            "ama_decision_fatigue": {
+                "enabled": false
+            },
+            "ama_jb_sophisticated": {
+                "enabled": false
+            },
+            "ama_resource_exhaustion": {
+                "enabled": false
+            }
+        },
+        "enabled": false
+    }
+}

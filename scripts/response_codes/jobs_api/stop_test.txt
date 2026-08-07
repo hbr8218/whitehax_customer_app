@@ -1,0 +1,7 @@
+200 — { "error": false, "message": "Job terminated safely", "status": <current job status> } — Invoked when the job exists and is owned by the caller; if status was running/cancel-requested, cancelation and optional PID termination are applied before responding.
+
+404 — { "error": true, "message": "Job not found" } — Invoked when job id does not exist or the job belongs to another user.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.

@@ -1,0 +1,37 @@
+{
+    "profile_type": "ai_model_attack_surface",
+    "test_file_paths": {
+        "dos": [],
+        "llm": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "mcp": [],
+        "rto": [],
+        "docs": [],
+        "frame": [],
+        "prompts": [],
+        "custom_decision_tree": [],
+        "rc_prompts": []
+    },
+    "llm_api_mis_use_abuse": {
+        "sub": {
+            "key_token_abuse_llm": {
+                "enabled": false
+            },
+            "invalid_api_attempts_llm": {
+                "enabled": false
+            },
+            "man_in_the_middle_attacks": {
+                "enabled": false
+            },
+            "anomalous_access_patterns_llm": {
+                "enabled": false
+            }
+        },
+        "enabled": false
+    }
+}

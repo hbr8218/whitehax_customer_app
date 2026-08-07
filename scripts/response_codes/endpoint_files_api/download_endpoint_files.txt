@@ -1,0 +1,11 @@
+200 — Binary ZIP (Content-Type application/zip; Content-Disposition attachment filename endpoint_files_<id>.zip). Tree under media_root/ai_endpoints_files/endpoint_<id>/ archived with root folder endpoint_files_<id>/ — Invoked when the endpoint exists for the caller, the directory exists, and at least one file is found under it.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+404 — { "error": true, "message": "User not found" } — Invoked when the resolved user id has no User row.
+
+404 — { "error": true, "message": "Endpoint not found" } — Invoked when the endpoint id is unknown or the endpoint belongs to another user.
+
+404 — { "error": true, "message": "Files not found" } — Invoked when the endpoint directory is missing, not a directory, or contains no files.

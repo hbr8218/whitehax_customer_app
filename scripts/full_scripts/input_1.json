@@ -1,0 +1,85 @@
+{
+    "email": "hbr@ironsdn.com",
+    "password": "hbr123",
+    "api_key": "70UyXkl-T7U3IxSaVhA4AW4gzCP4ipjIn0AO2OCjRhI",
+    "profile_info": {
+        "name": "test_1",
+        "description": "test_1",
+        "type": "prompts_docs_llm",
+        "endpoint_config_id": 286,
+        "config": {
+            "profile_type": "prompts_docs_llm",
+            "prompts_testing": {
+                "enabled": true
+            },
+            "test_file_paths": {
+                "dos": [],
+                "llm": [],
+                "mcp": [],
+                "rto": [],
+                "docs": [],
+                "frame": [],
+                "prompts": [
+                    {
+                        "file_name": "direct_prompt_injections_1500.csv",
+                        "file_path": "/home/ubuntu/projects/wh_internal_api/wh_tester_api/media_root/user_files/user_2/user_uploaded_files/prompts/direct_prompt_injections_1500.csv",
+                        "file_creation_method": "uploaded"
+                    }
+                ],
+                "rc_prompts": [],
+                "custom_decision_tree": []
+            },
+            "adv_multi_attacks": {
+                "sub": {
+                    "ama_backdoor": {
+                        "enabled": false
+                    },
+                    "ama_collusion": {
+                        "enabled": false
+                    },
+                    "ama_jb_classic": {
+                        "enabled": false
+                    },
+                    "ama_jb_reverse": {
+                        "enabled": false
+                    },
+                    "ama_crisis_manip": {
+                        "enabled": false
+                    },
+                    "ama_tool_exploit": {
+                        "enabled": false
+                    },
+                    "ama_jb_contextual": {
+                        "enabled": false
+                    },
+                    "ama_safe_boundary": {
+                        "enabled": false
+                    },
+                    "ama_jb_token_manip": {
+                        "enabled": false
+                    },
+                    "ama_info_extraction": {
+                        "enabled": false
+                    },
+                    "ama_decision_fatigue": {
+                        "enabled": false
+                    },
+                    "ama_jb_sophisticated": {
+                        "enabled": false
+                    },
+                    "ama_resource_exhaustion": {
+                        "enabled": false
+                    }
+                },
+                "enabled": false
+            },
+            "malicious_doc_uploads": {
+                "enabled": false
+            }
+        },
+        "retry_attempts": "10"
+    },
+    "report_info": {
+        "name": "test_1"
+    }
+}

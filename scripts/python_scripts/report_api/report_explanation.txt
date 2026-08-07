@@ -1,0 +1,276 @@
+{
+    // Unique identifier for this report record
+    "id": "",
+    // Reference to the test profile used for this report
+    "profile_id": "",
+    "score_json": {
+        "data": {
+            "<category_name>": {
+                // Overall readiness score for this category
+                "readiness": "",
+                // Total number of tests executed in this category
+                "total_tests": "",
+                // Lists of failed test case IDs, grouped by attack sub-category
+                "failed_tests": {},
+                // Total number of tests that failed across all sub-categories
+                "total_failed": "",
+                // Total number of tests that passed across all sub-categories
+                "total_passed": "",
+                // Per sub-category counts broken down by total, failed, and passed
+                "sub_cat_counts": {
+                    "total_tests": {},
+                    "total_failed": {},
+                    "total_passed": {}
+                },
+                // Average response time per sub-category in milliseconds
+                "sub_cat_avg_time": {},
+                // Overall average response time across all tests in milliseconds
+                "avg_response_time": "",
+                // Readiness score broken down per sub-category
+                "sub_cat_readiness": {}
+            }
+        },
+        "quick_stats": {
+            // Aggregate count of all tests run in this report
+            "total_tests": "",
+            // Count of API-level errors encountered, keyed by error type
+            "api_error_count": {},
+            // Number of tests flagged as high-risk failures
+            "total_high_risk": "",
+            // Aggregate readiness percentage across all categories tested
+            "overall_readiness": "",
+            // Qualitative risk label for the overall report
+            "overall_risk_level": "",
+            // Total count of tests that did not pass
+            "total_failed_tests": "",
+            // Number of distinct test categories exercised in this run
+            "total_categories_tested": "",
+            // Mean response time across every test in the report in milliseconds
+            "overall_avg_response_time": ""
+        },
+        // Recovery time objective results, empty if RTO testing was not run
+        "rto_results": {
+            // Overall readiness score for RTO tests
+            "readiness": "",
+            // Total number of tests executed in this category
+            "total_tests": "",
+            // Lists of failed test case IDs grouped by sub-category
+            "failed_tests": {
+                // Document upload related tests
+                "doc_upload_tests": [],
+                // Placeholder for prompt size / other categories
+                "<category_name>": [
+                    {
+                        // Payload sent in the test
+                        "payload": "",
+                        // Unique identifier for this test case
+                        "test_id": "",
+                        // Risk classification for this test case
+                        "risk_level": "",
+                        // Response time in milliseconds
+                        "response_time": ""
+                    }
+                ]
+            },
+            // Total number of tests that failed
+            "total_failed": "",
+            // Total number of tests that passed
+            "total_passed": "",
+            // Per sub-category counts broken down by total, failed, and passed
+            "sub_cat_counts": {
+                "total_tests": {},
+                "total_failed": {},
+                "total_passed": {}
+            },
+            // Average response time per sub-category in milliseconds
+            "sub_cat_avg_time": {},
+            // Overall average response time across all tests in milliseconds
+            "avg_response_time": "",
+            // Readiness score broken down per sub-category
+            "sub_cat_readiness": {}
+        },
+        "dos_simulation": {
+            "summary": {
+                // Number of distinct DoS simulation scenarios executed
+                "total_tests": "",
+                // Number of simulation scenarios that failed
+                "tests_failed": "",
+                // Number of individual requests that were successfully processed
+                "tests_passed": "",
+                // Total HTTP requests sent across all simulations
+                "total_requests": "",
+                // Aggregate risk level derived from all simulation results
+                "overall_risk_level": "",
+                // Estimated API cost incurred by the simulation in USD
+                "total_estimated_cost": "",
+                // Total wall-clock time the simulation ran in seconds
+                "total_duration_seconds": ""
+            },
+            // Per-scenario breakdown of each DoS simulation run
+            "detailed_results": [
+                {
+                    // Count of requests that failed during this scenario
+                    "failed": "",
+                    // Whether the overall scenario is considered passed
+                    "passed": "",
+                    // Human-readable summary of the scenario outcome
+                    "details": "",
+                    // Unique identifier for this test scenario
+                    "test_id": "",
+                    // How long this scenario took to complete in seconds
+                    "duration": "",
+                    // Fraction of requests that resulted in an error
+                    "error_rate": "",
+                    // Risk classification for this specific scenario
+                    "risk_level": "",
+                    // Requests processed per second during the scenario
+                    "throughput": "",
+                    // Attack pattern used, maps to a sub-category key
+                    "attack_type": "",
+                    // Estimated API cost for this scenario in USD
+                    "cost_estimate": "",
+                    // Total requests dispatched in this scenario
+                    "requests_sent": "",
+                    // Requests that received a valid response
+                    "successful_responses": ""
+                }
+            ],
+            // Aggregated metrics per attack type across all scenarios
+            "attack_type_breakdown": {
+                "test_name": {
+                    // Number of scenarios of this attack type
+                    "count": "",
+                    // Cumulative estimated cost for this attack type in USD
+                    "total_cost": "",
+                    // Ratio of scenarios that passed
+                    "success_rate": "",
+                    // Mean error rate across scenarios of this type
+                    "avg_error_rate": ""
+                }
+            }
+        },
+        // Results from multi-vector adversarial attack simulations, empty if not run
+        "adv_multi_attacks": {},
+        // Results from MCP/agent-based simulation tests, empty if not run
+        "mcp_agent_simulation": {
+            // Name/version of the tester used
+            "tester": "",
+            "summary": {
+                // Total number of tests executed
+                "total_tests": "",
+                // Percentage or count of tests that failed
+                "tests_failed": "",
+                // Percentage or count of tests that passed
+                "tests_passed": "",
+                // Total number of requests sent across all tests
+                "total_requests": "",
+                // Overall risk classification
+                "overall_risk_level": "",
+                // Number of detected security violations
+                "security_violations": "",
+                // Total execution time in seconds
+                "total_duration_seconds": ""
+            },
+            // Unique identifier for this simulation session
+            "session_id": "",
+            // Target endpoint URL tested
+            "target_url": "",
+            // Timestamp when results were generated
+            "generated_at": "",
+            // Final human-readable verdict of the simulation
+            "final_verdict": "",
+            // Per-test detailed results
+            "detailed_results": [
+                {
+                    // Number of failed requests in this test
+                    "failed": "",
+                    // Qualitative impact summary
+                    "impact": "",
+                    // Whether the test passed overall
+                    "passed": "",
+                    // Detailed description of the test outcome
+                    "details": "",
+                    // Unique identifier for this test case
+                    "test_id": "",
+                    // Fraction of requests that failed
+                    "error_rate": "",
+                    // Risk classification for this test
+                    "risk_level": "",
+                    // Number of successful requests
+                    "successful": "",
+                    // Attack type identifier
+                    "attack_type": "",
+                    // Duration of test in seconds
+                    "duration_sec": "",
+                    // Total requests sent
+                    "requests_sent": "",
+                    // Throughput (requests per second)
+                    "throughput_req_per_sec": ""
+                }
+            ],
+            // Security findings identified during testing
+            "security_findings": [
+                {
+                    // Description of the finding
+                    "details": "",
+                    // Unique identifier for the test
+                    "test_id": "",
+                    // Risk classification
+                    "risk_level": "",
+                    // Attack type associated with the finding
+                    "attack_type": "",
+                    // Explanation of the security impact
+                    "security_impact": ""
+                }
+            ],
+            // Aggregated metrics per attack type
+            "attack_type_breakdown": {
+                "<sub_category_name>": {
+                    // Number of tests for this attack type
+                    "count": "",
+                    // Ratio of successful executions
+                    "success_rate": "",
+                    // Average error rate
+                    "avg_error_rate": "",
+                    // Highest observed risk level
+                    "max_risk_level": "",
+                    // Total requests across tests
+                    "total_requests": ""
+                }
+            }
+        }
+    },
+    // ISO 8601 timestamp when this report was generated
+    "created_at": "",
+    // Top-level readiness score for the entire report
+    "overall_readiness": "",
+    // ID of the user who initiated this report
+    "user_id": "",
+    // Display name given to this report
+    "report_name": "",
+    // Summary of the target endpoint that was tested
+    "endpoint_details_summary": {
+        // Human-readable name of the tested endpoint
+        "endpoint_name": "",
+        // Type of endpoint
+        "endpoint_type": ""
+    },
+    // Summary of the test profile configuration used
+    "profile_details_summary": {
+        // Human-readable name of the test profile
+        "profile_name": "",
+        // Category of tester
+        "profile_type": ""
+    },
+    // Details of the user who owns this report
+    "user_details_summary": {
+        // User's first name
+        "fname": "",
+        // User's last name
+        "lname": "",
+        // User's email address
+        "email": "",
+        // Name of the user's organisation
+        "company_name": ""
+    }
+}

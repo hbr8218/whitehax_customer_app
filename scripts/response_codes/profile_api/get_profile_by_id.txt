@@ -1,0 +1,9 @@
+200 — { id, user_id, profile_name, profile_description, validity, config, created_at, updated_at, files: {}, file_paths: {}, profile_type, endpoint_config_id (or "") } — Invoked when the profile id exists and is owned by the authenticated user.
+
+404 — { "detail": "Profile not found" } — Invoked when the id is unknown or the profile is owned by another user.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
+
+500 — { "detail": "An error occurred: <message>" } — Invoked on unexpected errors other than DoesNotExist (e.g. DB failure).

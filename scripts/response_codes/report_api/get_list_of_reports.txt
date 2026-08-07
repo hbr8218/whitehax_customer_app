@@ -1,0 +1,5 @@
+200 — JSON array of report summaries (no score_json). Each item: id, profile_id, created_at, overall_readiness, user_id, report_type, report_name, profile_type, profile_name — Invoked when auth succeeds; returns the authenticated user’s report_type="individual" ScanResults ordered by newest first (empty array if none).
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.

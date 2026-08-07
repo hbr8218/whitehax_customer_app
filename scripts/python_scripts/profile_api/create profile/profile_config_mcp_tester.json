@@ -1,0 +1,207 @@
+{
+    "profile_type": "mcp_tester",
+    "test_file_paths": {
+        "dos": [],
+        "llm": [],
+        "mcp": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ],
+        "rto": [],
+        "docs": [],
+        "frame": [],
+        "prompts": [],
+        "custom_decision_tree": [],
+        "rc_prompts": []
+    },
+    "mcp_agent": {
+        "sub": {
+            "tool_abuse": {
+                "params": {
+                    "number_of_tool_requests": null
+                },
+                "enabled": false
+            },
+            "memory_leak": {
+                "params": {
+                    "number_of_iterations": null
+                },
+                "enabled": false
+            },
+            "session_hijack": {
+                "params": {
+                    "number_of_sessions": null
+                },
+                "enabled": false
+            },
+            "context_overflow": {
+                "params": {
+                    "context_overflow_count": null
+                },
+                "enabled": false
+            },
+            "test_auth_bypass": {
+                "params": {
+                    "auth_bypass_attacks": null
+                },
+                "enabled": false
+            },
+            "test_tool_misuse": {
+                "params": {
+                    "tool_misuse_attacks": null
+                },
+                "enabled": false
+            },
+            "protocol_violation": {
+                "params": {
+                    "number_of_protocol_requests": null
+                },
+                "enabled": false
+            },
+            "test_sql_injection": {
+                "params": {
+                    "sql_inj_attacks": null
+                },
+                "enabled": false
+            },
+            "test_path_traversal": {
+                "params": {
+                    "path_trav_attacks": null
+                },
+                "enabled": false
+            },
+            "malicious_tool_calls": {
+                "params": {
+                    "number_of_malicious_requests": null
+                },
+                "enabled": false
+            },
+            "test_benign_requests": {
+                "params": {
+                    "benign_reqs_num": null
+                },
+                "enabled": false
+            },
+            "test_command_injection": {
+                "params": {
+                    "cmd_inj_attacks": null
+                },
+                "enabled": false
+            },
+            "test_data_exfiltration": {
+                "params": {
+                    "data_exfil_attacks": null
+                },
+                "enabled": false
+            },
+            "test_generic_injection": {
+                "params": {
+                    "gen_inj_attacks": null
+                },
+                "enabled": false
+            },
+            "test_malicious_content": {
+                "params": {
+                    "mal_cont_attacks": null
+                },
+                "enabled": false
+            },
+            "resource_exhaustion_mcpa": {
+                "params": {
+                    "concurrent_resource_requests": null
+                },
+                "enabled": false
+            },
+            "test_resource_exhaustion": {
+                "params": {
+                    "rsc_ex_attacks": null
+                },
+                "enabled": false
+            },
+            "test_prompt_injection_mcpa": {
+                "params": {
+                    "prompt_inj_attacks": null
+                },
+                "enabled": false
+            },
+            "test_session_hijacking_mcpa": {
+                "params": {
+                    "session_hijack_attacks": null
+                },
+                "enabled": false
+            }
+        },
+        "enabled": false
+    },
+    "safe_mcp_tests": {
+        "sub": {
+            "safe_mcp_ops": {
+                "enabled": false
+            },
+            "safe_mcp_auth": {
+                "enabled": false
+            },
+            "safe_mcp_pages": {
+                "enabled": false
+            },
+            "safe_mcp_robust": {
+                "enabled": false
+            },
+            "safe_mcp_schema": {
+                "enabled": false
+            },
+            "safe_mcp_stream": {
+                "enabled": false
+            },
+            "safe_mcp_baseline": {
+                "enabled": false
+            },
+            "safe_mcp_encoding": {
+                "enabled": false
+            },
+            "safe_mcp_protocol": {
+                "enabled": false
+            },
+            "safe_mcp_resources": {
+                "enabled": false
+            },
+            "safe_mcp_tools_sem": {
+                "enabled": false
+            },
+            "safe_mcp_transport": {
+                "enabled": false
+            },
+            "safe_mcp_rate_limit": {
+                "enabled": false
+            },
+            "safe_mcp_tools_disc": {
+                "enabled": false
+            },
+            "safe_mcp_concurrency": {
+                "enabled": false
+            },
+            "safe_mcp_input_bounds": {
+                "enabled": false
+            },
+            "safe_mcp_side_effects": {
+                "enabled": false
+            },
+            "safe_mcp_observability": {
+                "enabled": false
+            },
+            "safe_mcp_session_cancel": {
+                "enabled": false
+            },
+            "safe_mcp_prompt_handling": {
+                "enabled": false
+            },
+            "safe_mcp_unknown_methods": {
+                "enabled": false
+            }
+        },
+        "enabled": false
+    }
+}

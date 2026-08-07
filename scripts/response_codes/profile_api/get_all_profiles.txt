@@ -1,0 +1,7 @@
+200 — JSON array: same object shape as get_profile_by_id for each profile — Invoked when authentication succeeds; may be an empty array.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session key validation fails.
+
+400 — { "detail": "Error retrieving profiles: <message>" } — Invoked when an exception occurs while loading the profile list for the user.

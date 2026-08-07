@@ -1,0 +1,9 @@
+200 — { "success": true, "detail": "Endpoint config deleted" } — Invoked when the endpoint exists, belongs to the authenticated user, and is deleted (including its media directory if present).
+
+404 — { "detail": "Endpoint config not found" } — Invoked when the id does not exist or the config belongs to another user (same message for both).
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when credentials are invalid or the session is not tied to the API key.
+
+400 — { "success": false, "detail": str(e) } — Invoked when an uncaught exception occurs during delete.

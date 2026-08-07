@@ -1,0 +1,9 @@
+200 — { "success": true, "session_key": "<32-char hex>" } — Invoked when the API key is valid, email/password match the key’s user, and a new 24hr session is created (prior active sessions for that API key are expired).
+
+400 — { "error": true, "message": "" } — Invoked when POST body is missing email or password (or both are empty after trim).
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when the Authorization header is missing (API key required).
+
+401 — { "error": true, "message": "Invalid API key" } — Invoked when Authorization is present but does not match an active, non-expired API key.
+
+401 — { "error": true, "message": "Invalid email or password" } — Invoked when the user cannot be loaded, email does not match the API key’s user, or password verification fails.

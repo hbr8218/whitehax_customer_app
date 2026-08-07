@@ -1,0 +1,23 @@
+{
+    "profile_type": "regulation_compliance",
+    "test_file_paths": {
+        "dos": [],
+        "llm": [],
+        "mcp": [],
+        "rto": [],
+        "docs": [],
+        "frame": [],
+        "prompts": [],
+        "custom_decision_tree": [],
+        "rc_prompts": [
+            {
+                "file_name": "",
+                "file_path": "",
+                "file_creation_method": ""
+            }
+        ]
+    },
+    "regulation_compliance_testing": {
+        "enabled": false
+    }
+}

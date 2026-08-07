@@ -1,0 +1,15 @@
+201 — { "error": false, "message": "Report successfully stored in database", "report_id": <int> } — Invoked when POST form fields validate, profile exists and belongs to the caller, and ScanResult is created (report_name defaults to whitehax_report if omitted/blank; report_type defaults to individual).
+
+400 — { "error": true, "message": "Invalid or missing profile_id" } — Invoked when profile_id is missing, empty, or not an integer.
+
+400 — { "error": true, "message": "Invalid or missing json" } — Invoked when score_json is missing, not valid JSON, or decodes to null.
+
+400 — { "error": true, "message": "Invalid or missing overall_readiness" } — Invoked when overall_readiness is missing, blank, or not parseable as a float.
+
+400 — { "error": true, "message": "Invalid report_type" } — Invoked when report_type is non-empty and not individual or consolidated.
+
+404 — { "error": true, "message": "Profile not found" } — Invoked when profile_id does not exist or the profile belongs to another user.
+
+401 — { "error": true, "message": "Invalid headers" } — Invoked when Authorization or X-Session-Key is missing.
+
+401 — { "error": true, "message": "Invalid API key or session key" } — Invoked when API key/session validation fails.
