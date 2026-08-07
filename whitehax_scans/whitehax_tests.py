@@ -19,12 +19,14 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import urljoin
 
 import requests
 
 
 OUTPUT_FILE = Path("whitehax_results.sarif")
+# GitHub code scanning rejects http(s) artifact URIs from a file:// checkout.
+# Keep DAST target URLs in the finding message instead.
+SARIF_ARTIFACT_URI = "whitehax_scans/whitehax_tests.py"
 SARIF_LEVELS = {
     "critical": "error",
     "high": "error",
@@ -486,21 +488,23 @@ def build_sarif(
                 "defaultConfiguration": {"level": finding["severity"]},
             }
 
-        location_uri = urljoin(target_url.rstrip("/") + "/", finding["uri"].lstrip("/"))
-        if finding["uri"].startswith("http://") or finding["uri"].startswith("https://"):
-            location_uri = finding["uri"]
-        elif finding["uri"] == target_url or not finding["uri"]:
-            location_uri = target_url
+        message = finding["description"] or finding["title"]
+        endpoint = finding["uri"] or target_url
+        if endpoint and endpoint not in message:
+            message = f"{message}\nTarget: {endpoint}"
 
         run["results"].append(
             {
                 "ruleId": finding["id"],
                 "level": finding["severity"],
-                "message": {"text": finding["description"] or finding["title"]},
+                "message": {"text": message},
                 "locations": [
                     {
                         "physicalLocation": {
-                            "artifactLocation": {"uri": location_uri}
+                            "artifactLocation": {
+                                "uri": SARIF_ARTIFACT_URI,
+                                "uriBaseId": "%SRCROOT%",
+                            }
                         }
                     }
                 ],
@@ -514,15 +518,21 @@ def build_sarif(
             "shortDescription": {"text": "WhiteHax scan execution error"},
             "defaultConfiguration": {"level": "warning"},
         }
+        error_message = execution_error[:4000]
+        if target_url and target_url not in error_message:
+            error_message = f"{error_message}\nTarget: {target_url}"
         run["results"].append(
             {
                 "ruleId": "WHX-SCAN-ERROR",
                 "level": "warning",
-                "message": {"text": execution_error[:4000]},
+                "message": {"text": error_message},
                 "locations": [
                     {
                         "physicalLocation": {
-                            "artifactLocation": {"uri": target_url}
+                            "artifactLocation": {
+                                "uri": SARIF_ARTIFACT_URI,
+                                "uriBaseId": "%SRCROOT%",
+                            }
                         }
                     }
                 ],

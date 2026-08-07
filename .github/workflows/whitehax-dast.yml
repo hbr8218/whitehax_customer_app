@@ -115,7 +115,7 @@ jobs:
 
       - name: Upload WhiteHax findings to GitHub code scanning
         if: always() && hashFiles('whitehax_results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: whitehax_results.sarif
           category: whitehax-dast
