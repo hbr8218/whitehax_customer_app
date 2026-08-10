@@ -555,7 +555,7 @@ def write_sarif(payload: dict[str, Any]) -> None:
 def main() -> int:
     target_url = os.environ.get("TARGET_URL", "")
     try:
-        whitehax_url = "https://demo.whitehax.com/api" #require_env("WHITEHAX_URL")
+        whitehax_url = "https://demo.whitehax.com" #require_env("WHITEHAX_URL")
         api_key = "70UyXkl-T7U3IxSaVhA4AW4gzCP4ipjIn0AO2OCjRhI" #require_env("WHITEHAX_API_KEY")
         target_url = "http://54.177.207.48:8000/chat" #require_env("TARGET_URL")
 
