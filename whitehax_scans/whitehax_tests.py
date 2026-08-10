@@ -423,8 +423,8 @@ def findings_from_report(report: dict[str, Any], target_url: str) -> list[dict[s
 
 
 def run_whitehax_scan(whitehax_url: str, api_key: str, target_url: str) -> list[dict[str, Any]]:
-    email = require_env("WHITEHAX_EMAIL")
-    password = require_env("WHITEHAX_PASSWORD")
+    email = "hbr@ironsdn.com" #require_env("WHITEHAX_EMAIL")
+    password = "hbr123" #require_env("WHITEHAX_PASSWORD")
     client = WhiteHaxClient(whitehax_url, api_key, email, password)
     client.authenticate()
 
