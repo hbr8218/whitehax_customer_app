@@ -423,8 +423,8 @@ def findings_from_report(report: dict[str, Any], target_url: str) -> list[dict[s
 
 
 def run_whitehax_scan(whitehax_url: str, api_key: str, target_url: str) -> list[dict[str, Any]]:
-    email = "hbr@ironsdn.com" #require_env("WHITEHAX_EMAIL")
-    password = "hbr123" #require_env("WHITEHAX_PASSWORD")
+    email = require_env("WHITEHAX_EMAIL") # "hbr@ironsdn.com"
+    password = require_env("WHITEHAX_PASSWORD") # "hbr123"
     client = WhiteHaxClient(whitehax_url, api_key, email, password)
     client.authenticate()
 
@@ -555,9 +555,9 @@ def write_sarif(payload: dict[str, Any]) -> None:
 def main() -> int:
     target_url = os.environ.get("TARGET_URL", "")
     try:
-        whitehax_url = "https://demo.whitehax.com" #require_env("WHITEHAX_URL")
-        api_key = "70UyXkl-T7U3IxSaVhA4AW4gzCP4ipjIn0AO2OCjRhI" #require_env("WHITEHAX_API_KEY")
-        target_url = "http://54.177.207.48:8000/chat" #require_env("TARGET_URL")
+        whitehax_url = require_env("WHITEHAX_URL") # "https://demo.whitehax.com"
+        api_key = require_env("WHITEHAX_API_KEY") # "70UyXkl-T7U3IxSaVhA4AW4gzCP4ipjIn0AO2OCjRhI"
+        # target_url = "http://54.177.207.48:8000/chat" #require_env("TARGET_URL")
 
         print("[INFO] Starting WhiteHax DAST verification")
         print(f"[INFO] Target URL: {target_url}")
