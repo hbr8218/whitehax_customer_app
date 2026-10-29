@@ -6,7 +6,8 @@ Stable CI/SARIF handling plus a WhiteHax REST API adapter that:
 1. authenticates (API key + email/password session),
 2. starts a job against a configured profile (optionally creating an endpoint for TARGET_URL),
 3. polls until the job completes,
-4. fetches the report and maps failed tests into SARIF findings.
+4. fetches the report and maps failed tests into SARIF findings,
+5. fetches recommendations and writes them to the GitHub job summary.
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
 
 import requests
 
@@ -41,6 +43,7 @@ SARIF_LEVELS = {
 DEFAULT_TIMEOUT = 30
 DEFAULT_POLL_INTERVAL = 10
 DEFAULT_POLL_TIMEOUT = 3600
+DEFAULT_RECOMM_TIMEOUT = 120
 
 
 def require_env(name: str) -> str:
@@ -300,6 +303,140 @@ class WhiteHaxClient:
         print(f"[INFO] Fetched WhiteHax report id={report_id}")
         return payload
 
+    def get_recommendations(self, report_id: str) -> Any:
+        recomm_for = os.environ.get("WHITEHAX_RECOMM_FOR", "full").strip() or "full"
+        lang = os.environ.get("WHITEHAX_LANG", "en").strip() or "en"
+        timeout = env_int("WHITEHAX_RECOMM_TIMEOUT", DEFAULT_RECOMM_TIMEOUT)
+        query = urlencode(
+            {"recomm_for": recomm_for, "report_id": report_id, "lang": lang}
+        )
+        url = f"{self.base_url}/api/readiness-score/recommendations/?{query}"
+        print(
+            f"[INFO] Requesting recommendations report_id={report_id} "
+            f"recomm_for={recomm_for} lang={lang} timeout={timeout}s"
+        )
+        print(f"[INFO] GET {url}")
+        started = time.perf_counter()
+        payload = _request("GET", url, headers=self._headers(), timeout=timeout)
+        elapsed = time.perf_counter() - started
+        print(f"[INFO] Recommendations response received in {elapsed:.1f}s")
+        return payload
+
+
+def _md(value: Any) -> str:
+    return str(value or "").replace("|", "\\|").replace("\n", " ").strip()
+
+
+def _recommendation_view(payload: Any) -> tuple[dict[str, Any], dict[str, Any], list[Any]]:
+    data = payload[0] if isinstance(payload, list) and payload else payload
+    if not isinstance(data, dict):
+        return {}, {}, []
+    assessment = data.get("overall_assessment")
+    summary = data.get("executive_summary")
+    actions = data.get("prioritized_actions")
+    return (
+        assessment if isinstance(assessment, dict) else {},
+        summary if isinstance(summary, dict) else {},
+        actions if isinstance(actions, list) else [],
+    )
+
+
+def format_recommendations(payload: Any, report_id: str) -> str:
+    assessment, summary, actions = _recommendation_view(payload)
+    lines = [
+        "## WhiteHax recommendations",
+        "",
+        f"Report `{report_id}`",
+        "",
+        "| | |",
+        "| --- | --- |",
+        f"| Security posture | {_md(assessment.get('security_posture') or summary.get('security_status'))} |",
+        f"| Timeline | {_md(assessment.get('remediation_timeline') or summary.get('recommended_timeline'))} |",
+        f"| Failed tests | {_md(assessment.get('total_failed_tests'))} |",
+        f"| Critical | {_md(assessment.get('critical_vulnerabilities'))} |",
+        f"| Risk score | {_md(assessment.get('overall_risk_score'))} |",
+        "",
+    ]
+    findings = summary.get("key_findings") or []
+    if isinstance(findings, list) and findings:
+        lines.append("### Key findings")
+        lines.extend(f"- {_md(item)}" for item in findings)
+        lines.append("")
+    if actions:
+        lines.append("### Prioritized actions")
+        for index, action in enumerate(actions, start=1):
+            if not isinstance(action, dict):
+                lines.append(f"{index}. {_md(action)}")
+                continue
+            lines.append(
+                f"{index}. **{_md(action.get('priority'))}** "
+                f"`{_md(action.get('category'))}` — {_md(action.get('action'))}"
+            )
+            if action.get("description"):
+                lines.append(f"   {_md(action.get('description'))}")
+            steps = action.get("implementation") or []
+            if isinstance(steps, list):
+                for step in steps[:6]:
+                    lines.append(f"   - {_md(step)}")
+        lines.append("")
+    elif not assessment and not summary:
+        lines.append("No executive summary or prioritized actions were returned.")
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def publish_recommendations(client: WhiteHaxClient, report_id: str) -> None:
+    print(f"[INFO] Report {report_id} is ready; loading recommendations")
+    try:
+        payload = client.get_recommendations(report_id)
+    except Exception as exc:
+        print(
+            f"[WARN] Recommendations unavailable for report {report_id}: {exc}",
+            file=sys.stderr,
+        )
+        traceback.print_exc()
+        return
+
+    if isinstance(payload, dict):
+        print(f"[INFO] Recommendations payload keys: {', '.join(payload.keys()) or '(none)'}")
+    elif isinstance(payload, list):
+        print(f"[INFO] Recommendations payload is a list of {len(payload)} item(s)")
+    else:
+        print(f"[INFO] Recommendations payload type: {type(payload).__name__}")
+
+    assessment, summary, actions = _recommendation_view(payload)
+    posture = assessment.get("security_posture") or summary.get("security_status") or "unknown"
+    timeline = assessment.get("remediation_timeline") or summary.get("recommended_timeline") or "unknown"
+    print(
+        f"[INFO] Recommendations summary posture={posture} timeline={timeline} "
+        f"failed_tests={assessment.get('total_failed_tests', 'n/a')} "
+        f"critical={assessment.get('critical_vulnerabilities', 'n/a')} "
+        f"actions={len(actions)}"
+    )
+    for index, action in enumerate(actions, start=1):
+        if not isinstance(action, dict):
+            print(f"[INFO] Action {index}/{len(actions)}: {action}")
+            continue
+        print(
+            f"[INFO] Action {index}/{len(actions)} "
+            f"priority={action.get('priority') or 'n/a'} "
+            f"category={action.get('category') or 'n/a'} "
+            f"action={action.get('action') or 'n/a'}"
+        )
+
+    markdown = format_recommendations(payload, report_id)
+    print("::group::WhiteHax recommendations")
+    print(markdown)
+    print("::endgroup::")
+
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "").strip()
+    if not summary_path:
+        print("[INFO] GITHUB_STEP_SUMMARY is unset; recommendations stay in the job log")
+        return
+    with open(summary_path, "a", encoding="utf-8") as handle:
+        handle.write(markdown + "\n")
+    print(f"[INFO] Wrote recommendations to GitHub step summary ({summary_path})")
+
 
 def _risk_to_severity(risk: Any, default: str = "medium") -> str:
     text = str(risk or "").strip().lower()
@@ -432,25 +569,27 @@ def run_whitehax_scan(whitehax_url: str, api_key: str, target_url: str) -> list[
     if report_id:
         print(f"[INFO] Using existing report id={report_id} (skip job start)")
         report = client.get_report(report_id)
-        return findings_from_report(report, target_url)
-
-    profile_id_raw = os.environ.get("WHITEHAX_PROFILE_ID", "").strip()
-    create_resources = env_bool("WHITEHAX_CREATE_RESOURCES", default=not bool(profile_id_raw))
-
-    if create_resources:
-        endpoint_id = client.create_endpoint(target_url)
-        profile_id = client.create_profile(endpoint_id)
     else:
-        profile_id = int(profile_id_raw)
-        print(f"[INFO] Reusing WhiteHax profile id={profile_id}")
+        profile_id_raw = os.environ.get("WHITEHAX_PROFILE_ID", "").strip()
+        create_resources = env_bool("WHITEHAX_CREATE_RESOURCES", default=not bool(profile_id_raw))
 
-    report_name = os.environ.get(
-        "WHITEHAX_REPORT_NAME",
-        f"github-actions-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
-    )
-    job_id = client.start_job(profile_id, report_name)
-    report_id = client.wait_for_report_id(job_id)
-    report = client.get_report(report_id)
+        if create_resources:
+            endpoint_id = client.create_endpoint(target_url)
+            profile_id = client.create_profile(endpoint_id)
+        else:
+            profile_id = int(profile_id_raw)
+            print(f"[INFO] Reusing WhiteHax profile id={profile_id}")
+
+        report_name = os.environ.get(
+            "WHITEHAX_REPORT_NAME",
+            f"github-actions-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}",
+        )
+        job_id = client.start_job(profile_id, report_name)
+        report_id = client.wait_for_report_id(job_id)
+        print(f"[INFO] Job finished; report id={report_id}")
+        report = client.get_report(report_id)
+
+    publish_recommendations(client, report_id)
     return findings_from_report(report, target_url)
 
 
