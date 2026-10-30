@@ -350,7 +350,91 @@ class WhiteHaxClient:
 
 
 def _md(value: Any) -> str:
-    return str(value or "").replace("|", "\\|").replace("\n", " ").strip()
+    if value is None:
+        return ""
+    text = str(value).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return text.replace("|", "\\|").replace("\n", " ").strip()
+
+
+def _label(key: Any) -> str:
+    return str(key).replace("_", " ").strip().capitalize()
+
+
+def _is_code_text(key: str, text: str) -> bool:
+    lowered = key.lower()
+    markers = ("code", "snippet", "pattern", "expression", "example", "regex")
+    return any(marker in lowered for marker in markers) or "\n" in text or len(text) > 240
+
+
+def _fence(text: str) -> list[str]:
+    tick = "```"
+    while tick in text:
+        tick += "`"
+    return ["", tick, text.rstrip("\n"), tick, ""]
+
+
+def _render_block(value: Any, level: int = 3) -> list[str]:
+    """Render a recommendation value without dropping nested text."""
+    if isinstance(value, dict):
+        lines: list[str] = []
+        for key, item in value.items():
+            key_text = str(key)
+            if isinstance(item, str) and _is_code_text(key_text, item):
+                lines.append(f"**{_label(key_text)}**")
+                lines.extend(_fence(item))
+                continue
+            if isinstance(item, (dict, list)):
+                lines.append(f"{'#' * min(level, 6)} {_label(key_text)}")
+                lines.append("")
+                lines.extend(_render_block(item, level + 1))
+                continue
+            lines.append(f"- **{_label(key_text)}:** {_md(item)}")
+        if lines and lines[-1] != "":
+            lines.append("")
+        return lines
+
+    if isinstance(value, list):
+        lines = []
+        for index, item in enumerate(value, start=1):
+            if isinstance(item, dict) and {"action", "priority", "implementation"} & item.keys():
+                lines.extend(_render_action(item, index))
+                continue
+            if isinstance(item, (dict, list)):
+                lines.append(f"{'#' * min(level, 6)} Item {index}")
+                lines.append("")
+                lines.extend(_render_block(item, level + 1))
+                continue
+            lines.append(f"- {_md(item)}")
+        if lines and lines[-1] != "":
+            lines.append("")
+        return lines
+
+    if isinstance(value, str) and _is_code_text("", value):
+        return _fence(value)
+    return [f"{_md(value)}", ""]
+
+
+def _render_action(action: dict[str, Any], index: int) -> list[str]:
+    priority = _md(action.get("priority")) or "Unspecified"
+    category = _md(action.get("category"))
+    title = _md(action.get("action") or action.get("title")) or "Action"
+    lines = [f"#### {index}. {title}", "", f"**{priority}**" + (f" · `{category}`" if category else ""), ""]
+    if action.get("description"):
+        lines.extend([_md(action.get("description")), ""])
+    steps = action.get("implementation") or []
+    if isinstance(steps, list) and steps:
+        lines.extend(["**Implementation**", ""])
+        for step in steps:
+            if isinstance(step, (dict, list)):
+                lines.extend(_render_block(step, 5))
+            else:
+                lines.append(f"- {_md(step)}")
+        lines.append("")
+    known = {"priority", "action", "title", "category", "description", "implementation"}
+    extra = {key: value for key, value in action.items() if key not in known}
+    if extra:
+        lines.extend(_render_block(extra, 5))
+    return lines
 
 
 def _recommendation_view(payload: Any) -> tuple[dict[str, Any], dict[str, Any], list[Any]]:
@@ -367,47 +451,112 @@ def _recommendation_view(payload: Any) -> tuple[dict[str, Any], dict[str, Any], 
     )
 
 
+def _posture_alert(posture: str) -> str:
+    text = posture.strip().lower()
+    if "critical" in text:
+        return "CAUTION"
+    if "high" in text or "urgent" in text:
+        return "WARNING"
+    if "medium" in text:
+        return "IMPORTANT"
+    return "NOTE"
+
+
 def format_recommendations(payload: Any, report_id: str) -> str:
-    assessment, summary, actions = _recommendation_view(payload)
-    lines = [
-        "## WhiteHax recommendations",
-        "",
-        f"Report `{report_id}`",
-        "",
-        "| | |",
-        "| --- | --- |",
-        f"| Security posture | {_md(assessment.get('security_posture') or summary.get('security_status'))} |",
-        f"| Timeline | {_md(assessment.get('remediation_timeline') or summary.get('recommended_timeline'))} |",
-        f"| Failed tests | {_md(assessment.get('total_failed_tests'))} |",
-        f"| Critical | {_md(assessment.get('critical_vulnerabilities'))} |",
-        f"| Risk score | {_md(assessment.get('overall_risk_score'))} |",
-        "",
-    ]
-    findings = summary.get("key_findings") or []
-    if isinstance(findings, list) and findings:
-        lines.append("### Key findings")
-        lines.extend(f"- {_md(item)}" for item in findings)
-        lines.append("")
-    if actions:
-        lines.append("### Prioritized actions")
-        for index, action in enumerate(actions, start=1):
-            if not isinstance(action, dict):
-                lines.append(f"{index}. {_md(action)}")
-                continue
-            lines.append(
-                f"{index}. **{_md(action.get('priority'))}** "
-                f"`{_md(action.get('category'))}` — {_md(action.get('action'))}"
+    documents = payload if isinstance(payload, list) else [payload]
+    lines = ["## WhiteHax recommendations", "", f"Report `{report_id}`", ""]
+    if not documents:
+        lines.extend(["No recommendation payload was returned.", ""])
+        return "\n".join(lines)
+
+    for document_index, document in enumerate(documents, start=1):
+        if not isinstance(document, dict):
+            if len(documents) > 1:
+                lines.extend([f"### Document {document_index}", ""])
+            lines.extend(_render_block(document))
+            continue
+
+        assessment, summary, actions = _recommendation_view(document)
+        posture = str(assessment.get("security_posture") or summary.get("security_status") or "")
+        timeline = str(assessment.get("remediation_timeline") or summary.get("recommended_timeline") or "")
+        if len(documents) > 1:
+            lines.extend([f"### Document {document_index}", ""])
+        if posture or timeline:
+            alert = _posture_alert(posture or timeline)
+            detail = " ".join(
+                part
+                for part in (
+                    f"**{_md(posture)} posture.**" if posture else "",
+                    _md(timeline) + "." if timeline else "",
+                    f"Risk score {_md(assessment.get('overall_risk_score'))}."
+                    if assessment.get("overall_risk_score") is not None
+                    else "",
+                    f"{_md(assessment.get('total_failed_tests'))} failed tests."
+                    if assessment.get("total_failed_tests") is not None
+                    else "",
+                )
+                if part
             )
-            if action.get("description"):
-                lines.append(f"   {_md(action.get('description'))}")
-            steps = action.get("implementation") or []
-            if isinstance(steps, list):
-                for step in steps[:6]:
-                    lines.append(f"   - {_md(step)}")
-        lines.append("")
-    elif not assessment and not summary:
-        lines.append("No executive summary or prioritized actions were returned.")
-        lines.append("")
+            lines.extend([f"> [!{alert}]", f"> {detail}", ""])
+
+        lines.extend(
+            [
+                "| Metric | Value |",
+                "| --- | --- |",
+                f"| Security posture | {_md(posture)} |",
+                f"| Timeline | {_md(timeline)} |",
+                f"| Failed tests | {_md(assessment.get('total_failed_tests'))} |",
+                f"| Critical | {_md(assessment.get('critical_vulnerabilities'))} |",
+                f"| Risk score | {_md(assessment.get('overall_risk_score'))} |",
+                "",
+            ]
+        )
+
+        findings = summary.get("key_findings") or []
+        if isinstance(findings, list) and findings:
+            lines.append("### Key findings")
+            lines.append("")
+            lines.extend(_render_block(findings, 4))
+
+        covered = {"executive_summary", "overall_assessment", "prioritized_actions"}
+        if actions:
+            lines.extend(["### Prioritized actions", ""])
+            for index, action in enumerate(actions, start=1):
+                if isinstance(action, dict):
+                    lines.extend(_render_action(action, index))
+                else:
+                    lines.extend(_render_block(action, 4))
+
+        leftover_summary = {
+            key: value
+            for key, value in summary.items()
+            if key not in {"security_status", "key_findings", "recommended_timeline"}
+        }
+        leftover_assessment = {
+            key: value
+            for key, value in assessment.items()
+            if key
+            not in {
+                "security_posture",
+                "remediation_timeline",
+                "total_failed_tests",
+                "critical_vulnerabilities",
+                "overall_risk_score",
+            }
+        }
+        if leftover_summary:
+            lines.extend(["### Executive summary", ""])
+            lines.extend(_render_block(leftover_summary))
+        if leftover_assessment:
+            lines.extend(["### Overall assessment", ""])
+            lines.extend(_render_block(leftover_assessment))
+
+        for key, value in document.items():
+            if key in covered:
+                continue
+            lines.extend([f"### {_label(key)}", ""])
+            lines.extend(_render_block(value, 4))
+
     return "\n".join(lines).rstrip() + "\n"
 
 
