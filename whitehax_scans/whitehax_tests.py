@@ -44,6 +44,9 @@ DEFAULT_TIMEOUT = 30
 DEFAULT_POLL_INTERVAL = 10
 DEFAULT_POLL_TIMEOUT = 3600
 DEFAULT_RECOMM_TIMEOUT = 120
+# recomm_for selects the generator. "full" is the prompts-and-docs profile.
+RECOMM_FOR_VALUES = ("full", "rto", "dos", "mcp", "reg", "llm")
+RECOMM_LANGS = ("en", "fr", "es")
 
 
 def require_env(name: str) -> str:
@@ -304,16 +307,39 @@ class WhiteHaxClient:
         return payload
 
     def get_recommendations(self, report_id: str) -> Any:
-        recomm_for = os.environ.get("WHITEHAX_RECOMM_FOR", "full").strip() or "full"
-        lang = os.environ.get("WHITEHAX_LANG", "en").strip() or "en"
+        """GET /api/readiness-score/recommendations/.
+
+        Query params:
+        - recomm_for: full (prompts and docs), rto, dos, mcp, reg, llm
+        - report_id: report to process
+        - lang: en (default), fr, es
+        - consolidation: false reads the result table; true reads consolidated_report
+        """
+        recomm_for = os.environ.get("WHITEHAX_RECOMM_FOR", "full").strip().lower() or "full"
+        lang = os.environ.get("WHITEHAX_LANG", "en").strip().lower() or "en"
+        consolidation = env_bool("WHITEHAX_CONSOLIDATION", default=False)
         timeout = env_int("WHITEHAX_RECOMM_TIMEOUT", DEFAULT_RECOMM_TIMEOUT)
+        if recomm_for not in RECOMM_FOR_VALUES:
+            print(
+                f"[WARN] recomm_for={recomm_for!r} is not one of {', '.join(RECOMM_FOR_VALUES)}; "
+                "full is the prompts-and-docs profile"
+            )
+        if lang not in RECOMM_LANGS:
+            print(f"[WARN] lang={lang!r} is not one of {', '.join(RECOMM_LANGS)}; sending it anyway")
         query = urlencode(
-            {"recomm_for": recomm_for, "report_id": report_id, "lang": lang}
+            {
+                "recomm_for": recomm_for,
+                "report_id": report_id,
+                "lang": lang,
+                "consolidation": "true" if consolidation else "false",
+            }
         )
         url = f"{self.base_url}/api/readiness-score/recommendations/?{query}"
+        source = "consolidated_report" if consolidation else "result table"
         print(
             f"[INFO] Requesting recommendations report_id={report_id} "
-            f"recomm_for={recomm_for} lang={lang} timeout={timeout}s"
+            f"recomm_for={recomm_for} lang={lang} consolidation={str(consolidation).lower()} "
+            f"source={source} timeout={timeout}s"
         )
         print(f"[INFO] GET {url}")
         started = time.perf_counter()
