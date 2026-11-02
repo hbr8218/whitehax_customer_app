@@ -14,3 +14,5 @@ venv/
 **/*.zip
 __MACOSX/
 .tools/
+
+.cursor/
