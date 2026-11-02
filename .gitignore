@@ -1,5 +1,7 @@
 # Local / CI artifacts
 whitehax_results.sarif
+gl-dast-report.json
+whitehax-recommendations.md
 whitehax_scans/_local_validate.py
 __pycache__/
 *.py[cod]

@@ -1,0 +1,109 @@
+# WhiteHax DAST verification for GitLab CI/CD.
+# Same scan as .github/workflows/whitehax-dast.yml. GitLab receives gl-dast-report.json
+# through artifacts:reports:dast instead of a SARIF upload.
+#
+# Required masked CI/CD variables:
+#   WHITEHAX_URL, WHITEHAX_API_KEY, WHITEHAX_EMAIL, WHITEHAX_PASSWORD
+# Optional CI/CD variables:
+#   WHITEHAX_PROFILE_ID, WHITEHAX_CREATE_RESOURCES, WHITEHAX_REPORT_ID, WHITEHAX_FAIL_ON_ERROR
+#
+# Start a pipeline from the GitLab UI, API, or a trigger and set WHITEHAX_TARGET_URL.
+# To scan after deploy in this same pipeline, set WHITEHAX_DEPLOY_HANDOFF=true and
+# replace deploy_to_runtime with the real deploy. That job must write the live URL to deploy.env.
+# Do not store WHITEHAX_TARGET_URL as a project variable: pipeline and project variables
+# outrank dotenv, so a stored URL would hide the URL published by deploy.
+
+stages:
+  - deploy
+  - security-verification
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(web|api|trigger|pipeline)$/'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $WHITEHAX_TARGET_URL != ""'
+    - if: '$WHITEHAX_DEPLOY_HANDOFF == "true"'
+    - when: never
+
+variables:
+  WHITEHAX_TARGET_URL:
+    value: ""
+    description: "Deployed application URL to scan. Required unless a deploy job publishes it."
+
+deploy_to_runtime:
+  stage: deploy
+  image: python:3.11-slim
+  rules:
+    - if: '$WHITEHAX_DEPLOY_HANDOFF == "true"'
+    - when: never
+  script:
+    - echo "Replace this script with the repository deploy. It must publish the live runtime URL."
+    - |
+      if [ -z "${WHITEHAX_TARGET_URL:-}" ]; then
+        echo "WHITEHAX_TARGET_URL is empty" >&2
+        exit 1
+      fi
+      printf 'WHITEHAX_TARGET_URL=%s\n' "$WHITEHAX_TARGET_URL" > deploy.env
+  artifacts:
+    reports:
+      dotenv: deploy.env
+
+whitehax_dast_scan:
+  stage: security-verification
+  image: python:3.11-slim
+  timeout: 2h
+  needs:
+    - job: deploy_to_runtime
+      artifacts: true
+      optional: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(web|api|trigger|pipeline)$/'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $WHITEHAX_TARGET_URL != ""'
+    - if: '$WHITEHAX_DEPLOY_HANDOFF == "true"'
+    - when: never
+  variables:
+    WHITEHAX_REPORT_FORMAT: "gitlab"
+    WHITEHAX_FAIL_ON_ERROR: "false"
+  before_script:
+    - python -m venv .venv
+    - . .venv/bin/activate
+    - python -m pip install --upgrade pip
+    - |
+      if [ -f whitehax_scans/requirements.txt ]; then
+        pip install -r whitehax_scans/requirements.txt
+      else
+        pip install requests
+      fi
+  script:
+    - . .venv/bin/activate
+    - |
+      if [ -z "${TARGET_URL:-}" ]; then
+        if [ -n "${WHITEHAX_TARGET_URL:-}" ]; then
+          export TARGET_URL="$WHITEHAX_TARGET_URL"
+        elif [ -n "${CI_ENVIRONMENT_URL:-}" ]; then
+          export TARGET_URL="$CI_ENVIRONMENT_URL"
+        fi
+      fi
+      if [ -z "${TARGET_URL:-}" ]; then
+        echo "TARGET_URL is empty. Set WHITEHAX_TARGET_URL when starting the pipeline." >&2
+        exit 1
+      fi
+      echo "Starting WhiteHax DAST verification"
+      echo "Target URL: $TARGET_URL"
+      if [ -n "${WHITEHAX_PROFILE_ID:-}" ]; then
+        echo "Using profile id: $WHITEHAX_PROFILE_ID"
+      else
+        echo "No profile id provided; adapter will create endpoint and profile resources when WHITEHAX_CREATE_RESOURCES is true"
+      fi
+      if [ -n "${WHITEHAX_REPORT_ID:-}" ]; then
+        echo "Using existing report id: $WHITEHAX_REPORT_ID"
+      fi
+      python whitehax_scans/whitehax_tests.py
+  artifacts:
+    name: "whitehax-dast-findings"
+    when: always
+    expire_in: 30 days
+    paths:
+      - gl-dast-report.json
+      - whitehax-recommendations.md
+    reports:
+      dast: gl-dast-report.json
